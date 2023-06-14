@@ -1,6 +1,9 @@
-import { clone, concat, create } from '../utilities';
+import { concat, create } from '../utilities';
 
-export function html(strings: TemplateStringsArray, ...values: unknown[]) {
+export function html(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): HTMLTemplateElement {
   let innerHTML = '';
   for (let i = 0; i < strings.length; i++) {
     innerHTML += strings[i];
