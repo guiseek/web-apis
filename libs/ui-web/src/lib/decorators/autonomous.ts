@@ -1,69 +1,32 @@
 import { AutonomousOptions, UIWebOptions } from '../interfaces';
 import { getCycle, attachShadow, clone } from '../utilities';
 
-export function Autonomous({ selector, ...opts }: AutonomousOptions) {
+export function Autonomous(
+  selector: `${string}-${string}`,
+  opts?: AutonomousOptions
+) {
   return function (target: UIWebOptions) {
     const cycle = getCycle(target);
-
-    let shadow: ShadowRoot | null = null;
-
-    let html: Element;
 
     target.prototype.attributeChangedCallback = function (
       name: string,
       prev: string,
       next: string
     ) {
-      const { template } = this;
-
       if (prev !== next) {
-        console.log(prev);
-        console.log(next);
         this[name] = next;
       }
-
-      console.log(template);
-
-      if (typeof template === 'function') {
-        // html = clone(template());
-      }
-
-
-      if (shadow === null) {
-        shadow = attachShadow(this, opts, html);
-      }
-
-      if (shadow instanceof ShadowRoot) {
-        // shadow.innerHTML = template.innerHTML
-      }
-      console.log(shadow);
-      // const html = clone(template);
-      // if (html && styles) {
-
-      //   html.append(styles);
-      // }
     };
 
     target.prototype.connectedCallback = function () {
       const { template, styles } = this;
 
-      if (!html && typeof template === 'function') {
-        console.log(this.userid);
-
-        html = clone(template());
-      }
-
-      if (html && styles) {
-        html.append(styles);
-      }
-
-      if (shadow === null) {
-        shadow = attachShadow(this, opts, html);
-      }
-
-      if (shadow instanceof ShadowRoot) {
-        // shadow.innerHTML = template.innerHTML
-        // shadow.innerHTML = html.innerHTML
+      if (template) {
+        const html = clone(template);
+        if (html && styles) {
+          html.append(styles);
+        }
+        attachShadow(this, opts, html);
       }
 
       if (this.connected) {
@@ -71,6 +34,16 @@ export function Autonomous({ selector, ...opts }: AutonomousOptions) {
       }
 
       cycle.connected.call(this);
+
+      if (this.afterConnected) {
+        this.afterConnected.call(this);
+      }
+
+      queueMicrotask(() => {
+        if (this.afterQueued) {
+          this.afterQueued.call(this);
+        }
+      });
     };
 
     customElements.define(selector, target);

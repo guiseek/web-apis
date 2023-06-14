@@ -1,19 +1,18 @@
-type SelectorCase<K extends string> =
-  | `${K}.${string}`
-  | `${K}#${string}`
-  | `${K}[${string}]`
-  | `${string} ${K}`;
+import { Selector } from '../interfaces';
 
 export function query<K extends keyof SVGElementTagNameMap>(
-  name: K | SelectorCase<K>,
-  parent?: Element
+  name: K | Selector<K>,
+  parent?: Element | ShadowRoot
 ): SVGElementTagNameMap[K];
 export function query<K extends keyof HTMLElementTagNameMap>(
-  name: K | SelectorCase<K>,
-  parent?: Element
+  name: K | Selector<K>,
+  parent?: Element | ShadowRoot
 ): HTMLElementTagNameMap[K];
 export function query<
   K extends keyof (HTMLElementTagNameMap | HTMLElementTagNameMap)
->(name: K | SelectorCase<K>, parent: Element = document.body) {
+>(
+  name: K | Selector<K>,
+  parent: Element | ShadowRoot | undefined = document.body
+) {
   return parent.querySelector(name);
 }

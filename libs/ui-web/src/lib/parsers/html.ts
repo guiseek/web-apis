@@ -1,4 +1,4 @@
-import { concat, create } from '../utilities';
+import { clone, concat, create } from '../utilities';
 
 export function html(strings: TemplateStringsArray, ...values: unknown[]) {
   let innerHTML = '';

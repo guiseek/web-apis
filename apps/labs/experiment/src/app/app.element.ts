@@ -1,5 +1,16 @@
-import { Attribute, Autonomous, css, html, pipe } from '@web-apis/ui-web';
+import {
+  css,
+  html,
+  map,
+  pipe,
+  filter,
+  reduce,
+  Autonomous,
+  pages,
+} from '@web-apis/ui-web';
 import './app.element.scss';
+import { inject } from '@web-apis/util-di';
+import { AppService, ProductResponse } from './app.service';
 
 interface User {
   name: string;
@@ -12,88 +23,79 @@ const users: User[] = [
   { name: 'Maria', age: 23 },
 ];
 
-interface CallbackMap<T, R> {
-  (item: T): R;
-}
+// template = () => html`
+//   <section>
+//     <h4>Todos</h4>
+//     ${map(
+//       users,
+//       (user) => `
+//         <p>${pipe(user.name, ['capitalize'])}</p>
+//         <p>
+//           Idade: ${user.age} * 3 =
+//           ${pipe(user.age, ['multiply:3'])}
+//         </p>
+//         <hr />
+//       `
+//     )}
+//   </section>
 
-interface CallbackFilter<T> {
-  (item: T): boolean;
-}
+//   <section>
+//     <h4>Maiores de 18</h4>
+//     ${map(
+//       filter(users, (user) => user.age > 18),
+//       (user) => `<p>${pipe(user.name, ['capitalize'])}</p>`
+//     )}
+//   </section>
 
-interface CallbackReduce<T, R> {
-  (previousValue: R, currentValue: T, currentIndex: number, array: T[]): R;
-}
-
-const map = <T, R>(items: T[], callback: CallbackMap<T, R>) =>
-  items.map(callback);
-
-const filter = <T>(items: T[], callback: CallbackFilter<T>) =>
-  items.filter(callback);
-
-const reduce = <T, R>(
-  items: T[],
-  callback: CallbackReduce<T, R>,
-  initialValue: R
-) => items.reduce(callback, initialValue);
-
-@Autonomous({
-  selector: 'user-age',
-})
-export class UserAge extends HTMLElement {
-  static observedAttributes = [
-    'userid'
-  ];
-
-  // @Attribute()
-  userid = 0
-
-  styles = css`
-    :host {
-      display: flex;
-    }
-  `;
-
-  template = () => html`
-    <p>Idade: ${users[this.userid].age} * 3 = ${pipe(users[this.userid].age, ['multiply:3'])}</p>
-  `;
-}
+//   <section>
+//     <h4>Idades somadas</h4>
+//     ${reduce(users, (prev, curr) => prev + curr.age, 0)}
+//   </section>
+// `;
 
 @Autonomous({
   selector: 'app-root',
 })
 export class AppElement extends HTMLElement {
-  styles = css`
-    :host {
-      display: block;
-      border: 2px dashed #111;
-      padding: 0px 16px 16px;
-    }
-  `;
+  styles = css``;
 
-  template = () => html`
-    <section>
-      <h4>Todos</h4>
-      ${map(
-        users,
-        (user) => `
-          <p>${pipe(user.name, ['capitalize'])}</p>
-          <user-age userid="${user.age}"></user-age>
-          <hr />
-        `
-      )}
-    </section>
+  service = inject(AppService);
 
-    <section>
-      <h4>Maiores de 18</h4>
-      ${map(
-        filter(users, (user) => user.age > 18),
-        (user) => `<p>${pipe(user.name, ['capitalize'])}</p>`
-      )}
-    </section>
+  connectedCallback() {
+    this.service.get<ProductResponse>('products').then((data) => {
+      if (this.shadowRoot) {
+        this.shadowRoot.appendChild(
+          html`
+            <table>
+              <tbody>
+                ${map(
+                  data.products,
+                  (p) =>
+                    `<tr>
+                    <td>${p.title}</td>
+                    <td>${p.brand}</td>
+                    <td>${p.category}</td>
+                  </tr>`
+                )}
+              </tbody>
+            </table>
 
-    <section>
-      <h4>Idades somadas</h4>
-      ${reduce(users, (prev, curr) => prev + curr.age, 0)}
-    </section>
-  `;
+            <ul>
+              ${pages(
+                data.total / 30,
+                (page) => `<li><a href="#page=${page}">${page}</a></li>`
+              )}
+            </ul>
+          `
+        );
+      }
+    });
+
+    onpopstate = (ev) => {
+      console.log(ev);
+      console.log(location.hash);
+      ev.preventDefault();
+
+    };
+  }
 }

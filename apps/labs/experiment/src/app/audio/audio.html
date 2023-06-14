@@ -1,0 +1,40 @@
+<div id="audio">
+  <div>
+      <div class="label">Local audio:</div>
+      <audio id="audio1" autoplay controls muted></audio>
+  </div>
+  <div>
+      <div class="label">Remote audio:</div>
+      <audio id="audio2" autoplay controls></audio>
+  </div>
+</div>
+
+<div id="buttons">
+  <select id="codec">
+      <!-- Codec values are matched with how they appear in the SDP.
+      For instance, opus matches opus/48000/2 in Chrome, and ISAC/16000
+      matches 16K iSAC (but not 32K iSAC). -->
+      <option value="opus">Opus</option>
+      <option value="ISAC">iSAC 16K</option>
+      <option value="G722">G722</option>
+      <option value="PCMU">PCMU</option>
+      <option value="red">RED</option>
+  </select>
+  <select id="codecPreferences" disabled>
+      <option selected value="">Default</option>
+  </select>
+  <button id="callButton">Call</button>
+  <button id="hangupButton">Hang Up</button>
+</div>
+<div class="graph-container" id="bitrateGraph">
+  <div>Bitrate</div>
+  <canvas id="bitrateCanvas"></canvas>
+</div>
+<div class="graph-container" id="packetGraph">
+  <div>Packets sent per second</div>
+  <canvas id="packetCanvas"></canvas>
+</div>
+<div class="graph-container" id="audioLevelGraph">
+  <div>average audio level ([0..1])</div>
+  <canvas id="audioLevelCanvas"></canvas>
+</div>

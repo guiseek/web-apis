@@ -1,14 +1,6 @@
-export interface ElementOptions {
-  selector: string;
-}
+export interface AutonomousOptions extends Partial<ShadowRootInit> {}
 
-export interface AutonomousOptions
-  extends ElementOptions,
-    Partial<ShadowRootInit> {}
-
-export interface BuiltInOptions
-  extends ElementOptions,
-    ElementDefinitionOptions {}
+export interface BuiltInOptions extends ElementDefinitionOptions {}
 
 export interface UIWebOptions extends CustomElementConstructor {
   selector?: string;

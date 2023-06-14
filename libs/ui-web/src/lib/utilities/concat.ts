@@ -1,6 +1,3 @@
-// export function concat(strings: TemplateStringsArray, ...values: unknown[]) {
-//   return strings.map((str, i) => str + (values[i] ?? '')).join('');
-// }
 export function concat<T>(value: T): string {
   if (Array.isArray(value)) {
     return value.map((item) => concat(item)).join('');

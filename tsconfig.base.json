@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@web-apis/ui-web": ["libs/ui-web/src/index.ts"]
+      "@web-apis/ui-web": ["libs/ui-web/src/index.ts"],
+      "@web-apis/util-data": ["libs/util-data/src/index.ts"],
+      "@web-apis/util-di": ["libs/util-di/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
